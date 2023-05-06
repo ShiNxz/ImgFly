@@ -27,7 +27,7 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 			const sftp = new Client()
 
 			console.log(typeof files, files.length)
-
+ 
 			try {
 				await sftp.connect({
 					host: process.env.SFTP_HOST,
