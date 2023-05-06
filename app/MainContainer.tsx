@@ -5,7 +5,6 @@ import { useState } from 'react'
 import UploadedFile from './UploadedFile'
 import { BsInfoCircle } from 'react-icons/bs'
 import { ActionIcon, Tooltip } from '@mantine/core'
-import bytes from 'bytes'
 
 const MainContainer = () => {
 	const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])

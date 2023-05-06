@@ -23,6 +23,7 @@ const UploadedFile = ({ path }: IFile) => {
 				</CopyButton>
 			}
 			rightSectionWidth={130}
+			onFocus={(event) => event.target.select()}
 		/>
 	)
 }
