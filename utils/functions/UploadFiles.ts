@@ -53,7 +53,7 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 						})
 					}
 				} else {
-					const fileName = files.path.split('\\')[files.path.split('\\').length - 1]
+					const fileName = files.path.split('\\')[files.path.split('\\').length - 1].replace('/tmp/', '')
 					const remoteFilePath = `${process.env.SFTP_PATH}/${fileName}`
 
 					await sftp.put(files.path, remoteFilePath)
