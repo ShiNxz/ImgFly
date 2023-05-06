@@ -46,6 +46,7 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 						uploadedFiles.push({
 							name: file.name,
 							path: fileName,
+							fullPath: `${process.env.NEXT_PUBLIC_DOMAIN}/${fileName}`,
 						})
 					}
 				} else {
@@ -57,6 +58,7 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 					uploadedFiles.push({
 						name: files.name,
 						path: fileName,
+						fullPath: `${process.env.NEXT_PUBLIC_DOMAIN}/${fileName}`,
 					})
 				}
 
@@ -88,6 +90,7 @@ type ReturnType = (req: NextApiRequest) => Promise<{ success: boolean; error?: s
 interface IFile {
 	name: string
 	path: string
+	fullPath: string
 }
 
 export default UploadFiles
