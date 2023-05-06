@@ -27,7 +27,7 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 			const sftp = new Client()
 
 			console.log(typeof files, files.length)
- 
+
 			try {
 				await sftp.connect({
 					host: process.env.SFTP_HOST,
@@ -39,11 +39,7 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 				if (files.length > 1) {
 					for await (const file of Object.values(files)) {
 						const fileName = file.path.split('\\')[file.path.split('\\').length - 1].replace('/tmp/', '')
-						console.log('fileName', fileName)
 						const remoteFilePath = `${process.env.SFTP_PATH}/${fileName}`
-						// /etc/easypanel/projects/personal/imageupload/volumes/uploads//tmp/upload_d0a7f3ef9e4b539d872f768bfe8bd2cc.jpg
-						// /etc/easypanel/projects/personal/imageupload/volumes/uploads/upload_603a19551542051a9e833b79e31ce865.jpg
-						console.log('remoteFilePath', remoteFilePath)
 
 						await sftp.put(file.path, remoteFilePath)
 

@@ -6,10 +6,10 @@ const UploadedFile = ({ path }: IFile) => {
 		<Input
 			readOnly
 			size='lg'
-			defaultValue={`${process.env.NEXT_PUBLIC_DOMAIN}/uploads/${path}`}
+			defaultValue={`${process.env.NEXT_PUBLIC_DOMAIN}/${path}`}
 			classNames={{ input: '!text-xs' }}
 			rightSection={
-				<CopyButton value={`${process.env.NEXT_PUBLIC_DOMAIN}/uploads/${path}`}>
+				<CopyButton value={`${process.env.NEXT_PUBLIC_DOMAIN}/${path}`}>
 					{({ copied, copy }) => (
 						<Button
 							color={copied ? 'teal' : 'blue'}
