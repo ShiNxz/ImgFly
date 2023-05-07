@@ -39,7 +39,7 @@ const Dropzone = ({ setUploadedFiles }: { setUploadedFiles: React.Dispatch<React
 
 	return (
 		<div
-			className={`p-10 px-28 rounded-lg border-2 flex flex-col items-center duration-200 ${
+			className={`p-10 px-28 h-44 justify-center rounded-lg border-2 flex flex-col items-center duration-200 ${
 				isDragReject || error ? 'border-red-500 !bg-red-500/20' : ''
 			} ${
 				isDragAccept

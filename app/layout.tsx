@@ -17,7 +17,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 			<body className={rubik.className + '  bg-slate-200'}>
 				<div className='h-screen flex flex-col justify-center items-center'>
 					{/* <Navbar /> */}
-					<main className='w-2/6'>{children}</main>
+					<main className='container'>{children}</main>
 					{/* <Footer /> */}
 				</div>
 			</body>
