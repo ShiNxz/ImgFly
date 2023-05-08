@@ -1,5 +1,5 @@
-import Footer from './Components/Footer'
-import Navbar from './Components/Navbar'
+// import Footer from './Components/Footer'
+// import Navbar from './Components/Navbar'
 import { Rubik } from 'next/font/google'
 import './globals.scss'
 import '@kirklin/reset-css/kirklin.css'

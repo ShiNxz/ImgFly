@@ -5,14 +5,13 @@ import Client from 'ssh2-sftp-client'
 import bytes from 'bytes'
 
 const UploadFiles: ReturnType = async (req: NextApiRequest) => {
-	return new Promise(async (resolve) => {
+	return new Promise(async (resolve, reject) => { // todo use reject and try catch instead of resolve -> return { success: false, error: err.message }
 		const uploadedFiles: IFile[] = []
 
 		const form = new IncomingForm({
 			maxFileSize: bytes(process.env.NEXT_PUBLIC_MAXSIZE || '5MB'),
 			keepExtensions: true,
 			multiples: true,
-			// uploadDir: './public/uploads',
 		})
 
 		await form.parse(req, async (a, b, file) => {
