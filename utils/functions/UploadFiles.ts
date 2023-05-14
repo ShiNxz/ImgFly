@@ -4,24 +4,26 @@ import { IncomingForm } from 'formidable-serverless'
 import Client from 'ssh2-sftp-client'
 import bytes from 'bytes'
 
+const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+
 const UploadFiles: ReturnType = async (req: NextApiRequest) => {
-	return new Promise(async (resolve, reject) => { // todo use reject and try catch instead of resolve -> return { success: false, error: err.message }
+	return new Promise(async (resolve, reject) => {
 		const uploadedFiles: IFile[] = []
 
 		const form = new IncomingForm({
-			maxFileSize: bytes(process.env.NEXT_PUBLIC_MAXSIZE || '5MB'),
+			maxFileSize: bytes(process.env.NEXT_PUBLIC_MAXSIZE || '2MB'),
 			keepExtensions: true,
 			multiples: true,
 		})
 
 		await form.parse(req, async (a, b, file) => {
 			if (!file || !Object.entries(file) || file.length < 1 || Object.entries(file).length < 1)
-				return resolve({ success: false, error: 'No files uploaded.' })
+				return reject('No files uploaded.')
 
 			const [_, files] = Object.entries(file)[0]
 
-			if (Object.entries(files).length < 1) return resolve({ success: false, error: 'Not enough files.' })
-			if (Object.entries(files).length > 10) return resolve({ success: false, error: 'Too much files.' })
+			if (Object.entries(files).length < 1) return reject('Not enough files.')
+			if (Object.entries(files).length > 10) return reject('Too much files.')
 
 			const sftp = new Client()
 
@@ -61,27 +63,24 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 
 				await sftp.end()
 
-				return resolve({
-					success: uploadedFiles.length > 0 ? true : false,
-					files: uploadedFiles.length > 0 ? uploadedFiles : undefined,
-					error: uploadedFiles.length > 0 ? undefined : 'No files uploaded.',
-				})
+				if (uploadedFiles.length < 1) return reject('No files uploaded.')
+
+				return resolve({ files: uploadedFiles })
 			} catch (err) {
-				return resolve({ success: false, error: err.message })
+				return reject(err.message)
 			}
 		})
 
 		form.onPart = (part) => {
-			if (part.mime === 'image/png' || part.mime === 'image/jpeg' || part.mime === 'image/gif')
-				form.handlePart(part)
-			else return resolve({ success: false, error: 'Only images are allowed!' })
+			if (mimeTypes.find((mime) => mime === part.mime)) form.handlePart(part)
+			else return reject('Invalid file type.')
 		}
 
-		form.on('error', (err) => resolve({ success: false, error: err }))
+		form.on('error', (err) => reject(err))
 	})
 }
 
-type ReturnType = (req: NextApiRequest) => Promise<{ success: boolean; error?: string; files?: IFile[] }>
+type ReturnType = (req: NextApiRequest) => Promise<{ files: IFile[] } | string>
 
 interface IFile {
 	name: string

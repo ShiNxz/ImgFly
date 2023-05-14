@@ -13,8 +13,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 	switch (method) {
 		case 'POST': {
-			const upload = await UploadFiles(req)
-			res.status(200).json(upload)
+			try {
+				const upload = await UploadFiles(req)
+				res.status(200).json(upload)
+			} catch (err) {
+				console.log(err)
+				res.status(400).json({ error: err })
+			}
 		}
 
 		default:
