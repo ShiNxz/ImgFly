@@ -16,6 +16,8 @@ const UploadFiles: ReturnType = async (req: NextApiRequest) => {
 			multiples: true,
 		})
 
+		console.log(process.env.NEXT_PUBLIC_DOMAIN)
+		
 		await form.parse(req, async (a, b, file) => {
 			if (!file || !Object.entries(file) || file.length < 1 || Object.entries(file).length < 1)
 				return reject('No files uploaded.')
