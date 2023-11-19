@@ -7,7 +7,12 @@ import { BsInfoCircle } from 'react-icons/bs'
 import { ActionIcon, Tooltip } from '@mantine/core'
 
 const MainContainer = () => {
-	const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])
+	const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([
+		{
+			name: 'test.png',
+			path: 'test.png',
+		},
+	])
 
 	return (
 		<>
@@ -15,7 +20,7 @@ const MainContainer = () => {
 				<div className='flex flex-row justify-between items-center mb-4'>
 					<span className='font-semibold text-lg'>העלאת תמונות</span>
 					<Tooltip label={<div>{process.env.NEXT_PUBLIC_MAXSIZE || '5MB'}</div>}>
-						<ActionIcon>
+						<ActionIcon variant='transparent'>
 							<BsInfoCircle />
 						</ActionIcon>
 					</Tooltip>

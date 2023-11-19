@@ -1,3 +1,5 @@
+'use client'
+
 import MainContainer from './MainContainer'
 
 const Home = () => {
