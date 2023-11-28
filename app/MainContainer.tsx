@@ -1,18 +1,13 @@
 'use client'
 
-import Dropzone, { IFile } from './Dropzone'
+import Dropzone, { type IFile } from './Dropzone'
 import { useState } from 'react'
 import UploadedFile from './UploadedFile'
 import { BsInfoCircle } from 'react-icons/bs'
 import { ActionIcon, Tooltip } from '@mantine/core'
 
 const MainContainer = () => {
-	const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([
-		{
-			name: 'test.png',
-			path: 'test.png',
-		},
-	])
+	const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])
 
 	return (
 		<>
@@ -25,7 +20,10 @@ const MainContainer = () => {
 						</ActionIcon>
 					</Tooltip>
 				</div>
-				<Dropzone setUploadedFiles={setUploadedFiles} />
+				<Dropzone
+					uploadedFiles={uploadedFiles}
+					setUploadedFiles={setUploadedFiles}
+				/>
 				{uploadedFiles.length > 0 && (
 					<>
 						<div className='bg-gray-200 rounded-lg h-0.5 w-full my-4' />
@@ -34,8 +32,7 @@ const MainContainer = () => {
 							{uploadedFiles.map((file) => (
 								<UploadedFile
 									key={file.name}
-									name={file.name}
-									path={file.path}
+									{...file}
 								/>
 							))}
 						</div>

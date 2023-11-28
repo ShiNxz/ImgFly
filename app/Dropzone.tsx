@@ -2,14 +2,16 @@
 
 import { useDropzone } from 'react-dropzone'
 import { AiOutlineCloudUpload } from 'react-icons/ai'
+import { useEdgeStore } from '@/utils/edgestore'
 import { Loader } from '@mantine/core'
 import { useState } from 'react'
-import axios from 'axios'
 import bytes from 'bytes'
 
-const Dropzone = ({ setUploadedFiles }: { setUploadedFiles: React.Dispatch<React.SetStateAction<IFile[]>> }) => {
-	const [isUploading, setIsUploading] = useState(false)
+const Dropzone = ({ uploadedFiles, setUploadedFiles }: Props) => {
+	const [isUploading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+
+	const { edgestore } = useEdgeStore()
 
 	const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } = useDropzone({
 		accept: { 'image/*': [] },
@@ -19,21 +21,50 @@ const Dropzone = ({ setUploadedFiles }: { setUploadedFiles: React.Dispatch<React
 		async onDrop(acceptedFiles) {
 			if (acceptedFiles.length === 0) return setError('לא נבחרו קבצים')
 
-			setIsUploading(true)
+			const newFiles = [
+				...acceptedFiles.filter((files) => {
+					// Check for duplicates
+					const duplicate = uploadedFiles.find((f) => f.name === files.name)
+					return duplicate ? false : true
+				}),
+			].map((file) => ({
+				name: file.name,
+				path: null,
+				progress: 10,
+			}))
 
-			let formData = new FormData()
-			acceptedFiles.forEach((file) => formData.append('file', file))
+			setUploadedFiles((prev) => [...prev, ...newFiles])
 
-			const { data, status } = await axios.post('/api/upload', formData)
-			if (data.error || !data.files || status !== 200) {
-				setError(data.error || 'שגיאה בעת העלאת הקבצים')
-				return setIsUploading(false)
-			}
+			await Promise.all(
+				acceptedFiles.map(async (file) => {
+					try {
+						const res = await edgestore.uploadedFiles.upload({
+							file,
+							onProgressChange: async (progress) => {
+								setUploadedFiles((prev) => {
+									const fileIndex = prev.findIndex((f) => f.name === file.name)
+									if (fileIndex === -1) return prev
 
-			const { files } = data as { files: IFile[] }
+									const newFiles = [...prev]
+									newFiles[fileIndex].progress = progress
+									return newFiles
+								})
+							},
+						})
 
-			setUploadedFiles((prev) => [...prev, ...files])
-			setIsUploading(false)
+						setUploadedFiles((prev) => {
+							const fileIndex = prev.findIndex((f) => f.name === file.name)
+							if (fileIndex === -1) return prev
+
+							const newFiles = [...prev]
+							newFiles[fileIndex].path = res.url
+							return newFiles
+						})
+					} catch (err) {
+						setUploadedFiles((prev) => prev.filter((f) => f.name !== file.name))
+					}
+				})
+			)
 		},
 	})
 
@@ -74,9 +105,15 @@ const Dropzone = ({ setUploadedFiles }: { setUploadedFiles: React.Dispatch<React
 	)
 }
 
+interface Props {
+	uploadedFiles: IFile[]
+	setUploadedFiles: React.Dispatch<React.SetStateAction<IFile[]>>
+}
+
 export interface IFile {
 	name: string
-	path: string
+	path: string | null
+	progress: number
 }
 
 export default Dropzone
